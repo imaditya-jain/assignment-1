@@ -100,7 +100,7 @@ usersSchema.methods.generateAccessToken = function (): string {
     if (!process.env.ACCESS_TOKEN_SECRET) {
         throw new Error('ACCESS_TOKEN_SECRET is not defined.')
     }
-    return jwt.sign({ _id: this._id, firstName: this.firstName, lastName: this.lastName, email: this.email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
+    return jwt.sign({ _id: this._id, firstName: this.firstName, lastName: this.lastName, email: this.email, role: this.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
 }
 
 usersSchema.methods.generateRefreshToken = function (): string {
