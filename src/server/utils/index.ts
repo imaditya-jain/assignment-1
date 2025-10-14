@@ -1,0 +1,1 @@
+export { default as sendMail } from './send-mail.util'

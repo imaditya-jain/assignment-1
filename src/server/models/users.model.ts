@@ -19,6 +19,7 @@ export interface IUser extends Document {
     createdAt: Date;
     updatedAt: Date;
     otp: string | null;
+    otpExpiry: Date | null;
     refreshToken: string | null;
     comparePassword(enteredPassword: string): Promise<boolean>;
     compareOTP(enteredOTP: string): Promise<boolean>;
@@ -75,6 +76,10 @@ const usersSchema = new mongoose.Schema<IUser>({
         type: String,
         default: null
     },
+    otpExpiry: {
+        type: Date,
+        default: null,
+    },
     refreshToken: {
         type: String,
         default: null
@@ -93,8 +98,11 @@ usersSchema.methods.comparePassword = async function (enteredPassword: string): 
 }
 
 usersSchema.methods.compareOTP = async function (enteredOTP: string): Promise<boolean> {
-    return await bcrypt.compare(enteredOTP, this.otp)
-}
+    if (!this.otp || !this.otpExpiry) return false;
+    const isExpired = this.otpExpiry.getTime() < Date.now();
+    if (isExpired) return false;
+    return await bcrypt.compare(enteredOTP, this.otp);
+};
 
 usersSchema.methods.generateAccessToken = function (): string {
     if (!process.env.ACCESS_TOKEN_SECRET) {
@@ -110,6 +118,6 @@ usersSchema.methods.generateRefreshToken = function (): string {
     return jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' })
 }
 
-const Users: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('Users', usersSchema)
+const Users: Model<IUser> = mongoose.models.Users || mongoose.model<IUser>('Users', usersSchema)
 
 export default Users
