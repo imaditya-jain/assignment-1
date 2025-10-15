@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function POST(req: NextApiRequest, res: NextApiResponse) {
-  connectToDatabase()
+  await connectToDatabase()
   try {
     if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'Method not allowed.' })
 

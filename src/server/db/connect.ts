@@ -18,7 +18,9 @@ const connectToDatabase = async () => {
         } else {
             console.log('An unknown error occurred.')
         }
-        process.exit(1)
+        // In serverless environments, exiting the process will kill the lambda.
+        // Throw the error instead so callers can handle it and return proper HTTP responses.
+        throw error
     }
 }
 

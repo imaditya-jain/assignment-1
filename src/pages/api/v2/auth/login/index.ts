@@ -6,23 +6,21 @@ import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function POST(request: NextApiRequest, response: NextApiResponse) {
-    connectToDatabase()
+    await connectToDatabase()
     try {
         if (request.method !== "POST") return response.status(405).json({ success: false, error: "Method not allowed." })
 
         const { email, password } = request.body
 
-        console.log({ email, password })
-
-        if (!email || !password) return response.status(400).json({ success: false, error: "Please provide required fields." })
+    if (!email || !password) return response.status(400).json({ success: false, error: "Please provide required fields." })
 
         const user = await Users.findOne({ email })
 
         if (!user) return response.status(404).json({ success: false, error: "User does not exist." })
 
-        const isPasswordMatched = user.comparePassword(password)
+    const isPasswordMatched = await user.comparePassword(password)
 
-        if (!isPasswordMatched) return response.status(403).json({ success: false, error: "Password does not matched." })
+    if (!isPasswordMatched) return response.status(403).json({ success: false, error: "Password does not matched." })
 
         const OTP = generateOTP();
         const hashedOTP = await bcrypt.hash(OTP, 10);
