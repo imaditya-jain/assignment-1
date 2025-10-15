@@ -20,8 +20,43 @@ interface Error {
     data: Record<string, unknown> | null;
 }
 
-export const registerHandler = createAsyncThunk<Response, Record<string, unknown>, { rejectValue: Error }>(
-    "/auth/register",
+// Login data interface
+interface LoginData {
+    email: string;
+    password: string;
+}
+
+// Verify OTP data interface
+interface VerifyOTPData {
+    email: string;
+    otp: string;
+}
+
+// Forgot password data interface
+interface ForgotPasswordData {
+    email: string;
+}
+
+// Reset password data interface
+interface ResetPasswordData {
+    email: string;
+    otp: string;
+    password: string;
+    confirmPassword: string;
+}
+
+// Register data interface
+interface RegisterData {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    role?: "user";
+}
+
+export const registerHandler = createAsyncThunk<Response, RegisterData, { rejectValue: Error }>(
+    "/account/register",
     async (data, { rejectWithValue }) => {
         try {
             const response = await axios.post<Response>("/api/v2/auth/register", data, { withCredentials: true });
@@ -45,8 +80,8 @@ export const registerHandler = createAsyncThunk<Response, Record<string, unknown
     }
 );
 
-export const loginHandler = createAsyncThunk<Response, Record<string, unknown>, { rejectValue: Error }>(
-    "/auth/login",
+export const loginHandler = createAsyncThunk<Response, LoginData, { rejectValue: Error }>(
+    "/account/login",
     async (data, { rejectWithValue }) => {
         try {
             const response = await axios.post<Response>("/api/v2/auth/login", data, { withCredentials: true });
@@ -70,8 +105,8 @@ export const loginHandler = createAsyncThunk<Response, Record<string, unknown>, 
     }
 );
 
-export const verifyOTPHandler = createAsyncThunk<Response, Record<string, unknown>, { rejectValue: Error }>(
-    "/auth/verify-otp",
+export const verifyOTPHandler = createAsyncThunk<Response, VerifyOTPData, { rejectValue: Error }>(
+    "/account/verify-otp",
     async (data, { rejectWithValue }) => {
         try {
             const response = await axios.post<Response>("/api/v2/auth/verify-otp", data, { withCredentials: true });
@@ -95,8 +130,8 @@ export const verifyOTPHandler = createAsyncThunk<Response, Record<string, unknow
     }
 );
 
-export const forgotPasswordHandler = createAsyncThunk<Response, Record<string, unknown>, { rejectValue: Error }>(
-    "/auth/forgot-password",
+export const forgotPasswordHandler = createAsyncThunk<Response, ForgotPasswordData, { rejectValue: Error }>(
+    "/account/forgot-password",
     async (data, { rejectWithValue }) => {
         try {
             const response = await axios.post<Response>("/api/v2/auth/forgot-password", data, { withCredentials: true });
@@ -120,8 +155,8 @@ export const forgotPasswordHandler = createAsyncThunk<Response, Record<string, u
     }
 );
 
-export const resetPasswordHandler = createAsyncThunk<Response, Record<string, unknown>, { rejectValue: Error }>(
-    "/auth/reset-password",
+export const resetPasswordHandler = createAsyncThunk<Response, ResetPasswordData, { rejectValue: Error }>(
+    "/account/reset-password",
     async (data, { rejectWithValue }) => {
         try {
             const response = await axios.post<Response>("/api/v2/auth/reset-password", data, { withCredentials: true });
@@ -145,8 +180,8 @@ export const resetPasswordHandler = createAsyncThunk<Response, Record<string, un
     }
 );
 
-export const authCheckHandler = createAsyncThunk<Response, Record<string, unknown>, { rejectValue: Error }>(
-    "/auth/auth-check",
+export const authCheckHandler = createAsyncThunk<Response, void, { rejectValue: Error }>(
+    "/account/auth-check",
     async (_, { rejectWithValue }) => {
         try {
             const response = await axios.post<Response>("/api/v2/auth/auth-check", {}, { withCredentials: true });
@@ -170,8 +205,8 @@ export const authCheckHandler = createAsyncThunk<Response, Record<string, unknow
     }
 );
 
-export const refreshTokenHandler = createAsyncThunk<Response, Record<string, unknown>, { rejectValue: Error }>(
-    "/auth/refresh-token",
+export const refreshTokenHandler = createAsyncThunk<Response, void, { rejectValue: Error }>(
+    "/account/refresh-token",
     async (_, { rejectWithValue }) => {
         try {
             const response = await axios.post<Response>("/api/v2/auth/refresh-token", {}, { withCredentials: true });
@@ -195,8 +230,8 @@ export const refreshTokenHandler = createAsyncThunk<Response, Record<string, unk
     }
 );
 
-export const logoutHandler = createAsyncThunk<Response, Record<string, unknown>, { rejectValue: Error }>(
-    "/auth/logout",
+export const logoutHandler = createAsyncThunk<Response, void, { rejectValue: Error }>(
+    "/account/logout",
     async (_, { rejectWithValue }) => {
         try {
             const response = await axios.post<Response>("/api/v2/auth/logout", {}, { withCredentials: true });
@@ -219,28 +254,3 @@ export const logoutHandler = createAsyncThunk<Response, Record<string, unknown>,
         }
     }
 );
-
-// export const fetchTokensHandler = createAsyncThunk<Response, Record<string, unknown>, { rejectValue: Error }>(
-//     "/auth/fetch-tokens",
-//     async (str, { rejectWithValue }) => {
-//         try {
-//             const response = await axios.post<Response>("/api/v2/auth/fetch-tokens", { withCredentials: true });
-//             return response.data;
-//         } catch (error) {
-//             if (error instanceof AxiosError) {
-//                 return rejectWithValue({
-//                     status: error.response?.status || 500,
-//                     success: false,
-//                     message: error.response?.data?.message || "",
-//                     data: error.response?.data || null,
-//                 });
-//             }
-//             return rejectWithValue({
-//                 status: 500,
-//                 success: false,
-//                 message: "Something went wrong.",
-//                 data: null,
-//             });
-//         }
-//     }
-// );

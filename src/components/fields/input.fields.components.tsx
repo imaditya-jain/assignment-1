@@ -29,7 +29,7 @@ const InputFields = <T extends Record<string, unknown>>({
     const [show, setShow] = useState(false);
 
     return (
-        <div className="mb-4">
+        <div style={{ marginBottom: "1rem" }}>
             <TextField
                 multiline={multline}
                 rows={rows}
@@ -40,18 +40,20 @@ const InputFields = <T extends Record<string, unknown>>({
                 error={!!errors[name]}
                 helperText={errors[name]?.message as string}
                 {...register(name)}
-                slotProps={{
-                    input: {
-                        endAdornment: type === "password" && (
-                            <IconButton
-                                onClick={() => setShow(!show)}
-                                aria-label={show ? "Hide password" : "Show password"}
-                            >
-                                {show ? <IoMdEyeOff /> : <IoMdEye />}
-                            </IconButton>
-                        ),
-                    },
-                }}
+                InputProps={
+                    type === "password"
+                        ? {
+                            endAdornment: (
+                                <IconButton
+                                    onClick={() => setShow(!show)}
+                                    aria-label={show ? "Hide password" : "Show password"}
+                                >
+                                    {show ? <IoMdEyeOff /> : <IoMdEye />}
+                                </IconButton>
+                            ),
+                        }
+                        : undefined
+                }
             />
         </div>
     );

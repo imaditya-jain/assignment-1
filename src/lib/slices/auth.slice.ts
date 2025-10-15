@@ -22,6 +22,7 @@ export interface AuthState {
     message: string;
     accessToken: string | null;
     refreshToken: string | null;
+    initialized: boolean;
 }
 
 const initialState: AuthState = {
@@ -32,6 +33,7 @@ const initialState: AuthState = {
     message: "",
     accessToken: null,
     refreshToken: null,
+    initialized: false,
 };
 
 const authSlice = createSlice({
@@ -78,7 +80,6 @@ const authSlice = createSlice({
             .addCase(loginHandler.pending, (state) => { authSlice.caseReducers.setPending(state) })
             .addCase(loginHandler.fulfilled, (state, action) => {
                 authSlice.caseReducers.setFulfilled(state, action)
-                // Login only sends OTP, doesn't authenticate yet
             })
             .addCase(loginHandler.rejected, (state, action) => { authSlice.caseReducers.setRejected(state, action) })
 
@@ -89,13 +90,16 @@ const authSlice = createSlice({
                 state.isAuthenticated = action.payload.success
                 state.accessToken = action.payload?.data?.accessToken
                 state.refreshToken = action.payload.data?.refreshToken
+                state.initialized = true
             })
+            
             .addCase(verifyOTPHandler.rejected, (state, action) => {
                 authSlice.caseReducers.setRejected(state, action)
                 state.user = null
                 state.isAuthenticated = false
                 state.accessToken = null
                 state.refreshToken = null
+                state.initialized = true
             })
 
             .addCase(logoutHandler.pending, (state) => { authSlice.caseReducers.setPending(state) })
@@ -123,13 +127,16 @@ const authSlice = createSlice({
                 state.isAuthenticated = action.payload.success
                 state.accessToken = action.payload?.data?.accessToken
                 state.refreshToken = action.payload?.data?.refreshToken
+                state.initialized = true
             })
+            
             .addCase(authCheckHandler.rejected, (state, action) => {
                 authSlice.caseReducers.setRejected(state, action)
                 state.user = null
                 state.isAuthenticated = false
                 state.accessToken = null
                 state.refreshToken = null
+                state.initialized = true
             })
 
             .addCase(refreshTokenHandler.pending, (state) => { authSlice.caseReducers.setPending(state) })
@@ -139,13 +146,16 @@ const authSlice = createSlice({
                 state.isAuthenticated = action.payload.success
                 state.accessToken = action.payload?.data?.accessToken
                 state.refreshToken = action.payload?.data?.refreshToken
+                state.initialized = true
             })
+            
             .addCase(refreshTokenHandler.rejected, (state, action) => {
                 authSlice.caseReducers.setRejected(state, action)
                 state.user = null
                 state.isAuthenticated = false
                 state.accessToken = null
                 state.refreshToken = null
+                state.initialized = true
             })
     }
 })

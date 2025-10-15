@@ -1,3 +1,4 @@
+import connectToDatabase from "@/server/db/connect";
 import { generateOTP } from "@/server/helpers";
 import { Users } from "@/server/models";
 import { sendMail } from "@/server/utils";
@@ -5,6 +6,7 @@ import bcrypt from "bcryptjs";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function POST(request: NextApiRequest, response: NextApiResponse) {
+    connectToDatabase()
     try {
         if (request.method !== "POST") return response.status(405).json({ success: false, error: "Method not allowed." })
 

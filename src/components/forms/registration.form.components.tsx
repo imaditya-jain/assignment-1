@@ -6,16 +6,15 @@ import * as yup from "yup";
 import InputFields from "../fields/input.fields.components";
 import { useAppDispatch } from "@/lib/hooks";
 import { registerHandler } from "@/lib/features/auth.features";
-import { Path } from "react-hook-form";console.log();
+import { Path } from "react-hook-form"; console.log();
 import { User } from "@/types/user.types";
 
 interface RegistrationFormProps {
-    page: string;
     isEdit: boolean;
     user: User | null;
 }
 
-const RegistrationForm = ({ page, isEdit, user }: RegistrationFormProps) => {
+const RegistrationForm = ({ isEdit, user }: RegistrationFormProps) => {
     const dispatch = useAppDispatch();
 
     const schema = yup.object({
@@ -31,10 +30,6 @@ const RegistrationForm = ({ page, isEdit, user }: RegistrationFormProps) => {
             .string()
             .email("Invalid email.")
             .required("Email is required."),
-        phone: yup
-            .string()
-            .matches(/^[0-9]{10}$/, "Phone number should be exactly 10 digits")
-            .required("Phone number is required."),
         ...(isEdit
             ? {}
             : {
@@ -67,7 +62,6 @@ const RegistrationForm = ({ page, isEdit, user }: RegistrationFormProps) => {
             firstName: user?.firstName || "",
             lastName: user?.lastName || "",
             email: user?.email || "",
-            phone: user?.phone || "",
         },
     });
 
@@ -77,8 +71,6 @@ const RegistrationForm = ({ page, isEdit, user }: RegistrationFormProps) => {
         },
         { id: "rf-2", type: "text" as const, name: "lastName", label: "Lastname", placeholder: "Doe", multiline: false, rows: 1 },
         { id: "rf-3", type: "email" as const, name: "email", label: "Email", placeholder: "john@example.com", multiline: false, rows: 1 },
-        { id: "rf-4", type: "tel" as const, name: "phone", label: "Phone", placeholder: "9420212223", multiline: false, rows: 1 },
-        { id: "rf-7", type: "file" as const, name: "avatar", label: "Avatar", placeholder: "", multiline: false, rows: 1 },
         ...(isEdit
             ? []
             : [
@@ -91,7 +83,9 @@ const RegistrationForm = ({ page, isEdit, user }: RegistrationFormProps) => {
         if (!isEdit) {
             const newData = {
                 ...data,
-                role: page === "/admin/users/create" ? "admin" : "user",
+                password: String(data.password),
+                confirmPassword: String(data.confirmPassword),
+                role: "user" as const,
             };
 
             dispatch(registerHandler(newData));
@@ -139,6 +133,6 @@ const RegistrationForm = ({ page, isEdit, user }: RegistrationFormProps) => {
 export default RegistrationForm;
 
 // TODO: Implement updateUser or import from the correct module if available
-function updateUser({ id, data }: { id: string; data: { password?: unknown; confirmPassword?: unknown; firstName: string; lastName: string; email: string; phone: string; } }): never {
-    throw new Error(`Function not implemented for user id: ${id}`);
+function updateUser({ id, data }: { id: string; data: Partial<User> }): never {
+    throw new Error(`Function not implemented for user id: ${id} data: ${JSON.stringify(data)}`);
 }
