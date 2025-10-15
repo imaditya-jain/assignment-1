@@ -1,5 +1,6 @@
 import connectToDatabase from "@/server/db/connect"
 import { Users } from "@/server/models"
+import { generateAccessAndRefreshToken } from "@/server/utils"
 import { NextApiRequest, NextApiResponse } from "next"
 
 export default async function POST(request: NextApiRequest, response: NextApiResponse) {
@@ -8,6 +9,7 @@ export default async function POST(request: NextApiRequest, response: NextApiRes
         if (request.method !== "POST") return response.status(405).json({ success: false, error: "Method not allowed." })
 
         const { email, otp } = request.body
+        console.log('{ email, otp }: ', { email, otp });
 
         if (!email || !otp) return response.status(400).json({ success: false, error: "Please provide required fields." })
 
@@ -19,9 +21,14 @@ export default async function POST(request: NextApiRequest, response: NextApiRes
 
         if (!isOTPMatched) return response.status(400).json({ success: false, error: "Invalid OTP." })
 
+        const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id.toString())
+        console.log('{ accessToken, refreshToken }: ', { accessToken, refreshToken });
+
         await Users.findByIdAndUpdate(user._id, { otp: null, otpExpiry: null })
 
-        return response.status(200).json({ success: true, message: "OTP verified successfully." });
+        response.setHeader("Set-Cookie", [`accessToken=${accessToken}; HttpOnly; Path=/; Max-Age=${24 * 60 * 60}; SameSite=Strict; ${process.env.NODE_ENV === "production" ? "Secure;" : ""}`,`refreshToken=${refreshToken}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=Strict; ${process.env.NODE_ENV === "production" ? "Secure;" : ""}`,])
+
+        return response.status(200).json({success: true, message:'Login successfully.'})
 
     } catch (error) {
         if (error instanceof Error) {

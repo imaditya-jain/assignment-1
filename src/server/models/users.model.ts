@@ -9,7 +9,7 @@ enum Role {
     ADMIN = 'admin'
 }
 
-export interface IUser extends Document {
+export interface IUser extends mongoose.Document {
     _id: Types.ObjectId;
     firstName: string;
     lastName: string;
